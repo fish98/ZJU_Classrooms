@@ -7,8 +7,7 @@ const site = "http://jxzygl.zju.edu.cn/jxzwsyqk/jxcdkb.aspx?jsdl=1"
 
 const form = new FormData()
 
-fs
-  .readFileSync('webRequest', {encoding: 'utf8'})
+fs.readFileSync('webRequest1', {encoding: 'utf8'})
   .split('\n')
   .forEach(item => {
     const [a,
@@ -53,7 +52,4 @@ fetch(site, {
   .then(res => res.text())
   .then(body => {
     console.log(body)
-    // const $ = cheerio.load(body) let allClass = [] $("#js > option").each((index,
-    // ele) => {   allClass.push($(ele).text()) }) allClass.shift()
-    // console.log(allClass)
   })
