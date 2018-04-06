@@ -57,15 +57,12 @@ async function getDetail() {
   Object
     .keys(conf)
     .forEach(i => body.append(i, conf[i]))
-  await fetch(site, {
+  const res = await fetch(site, {
       method: "POST",
       body
     })
-    .then(res => res.text())
-    .then(body => {
-      console.log(body)
-    })
-    .catch(err => console.log(err))
+  const html = await res.text()
+  return html
 }
 
 async function getClassRoom(){
@@ -73,11 +70,18 @@ async function getClassRoom(){
   await changeXuanXue()
   await getXuanXue()
   await changeXuanXue()
-  await getDetail()
+  const html = await getDetail()
+  createForm(html)
 }
 
-async function createForm(){
-  
+async function createForm(html){
+  let classRoom = []
+  const $ = cheerio.load(html)
+  $('#Table6 > tbody > tr'),map((i, item) => {
+    if(i > 1){
+       
+    }
+  })
 }
 
 async function ttfish(){
