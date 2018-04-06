@@ -68,12 +68,21 @@ async function getDetail() {
     .catch(err => console.log(err))
 }
 
-async function ttfish() {
+async function getClassRoom(){
   await getXuanXue()
   await changeXuanXue()
   await getXuanXue()
   await changeXuanXue()
   await getDetail()
+}
+
+async function createForm(){
+  
+}
+
+async function ttfish(){
+await getClassRoom()
+await createForm()
 }
 
 ttfish()
