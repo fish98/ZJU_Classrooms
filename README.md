@@ -2,7 +2,7 @@
 
 Spider for School Classrooms
 
-Tring best to adjust the web page from school classroom register center 
+Trying best to adjust the web page from school classroom register center 
 
 Really awful experience for digging data and fix imgs and forms 
 
