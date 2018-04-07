@@ -58,35 +58,36 @@ async function getDetail() {
     .keys(conf)
     .forEach(i => body.append(i, conf[i]))
   const res = await fetch(site, {
-      method: "POST",
-      body
-    })
+    method: "POST",
+    body
+  })
   const html = await res.text()
   return html
 }
 
-async function getClassRoom(){
+async function getClassRoom() {
   await getXuanXue()
   await changeXuanXue()
   await getXuanXue()
   await changeXuanXue()
   const html = await getDetail()
-  createForm(html)
+  await createForm(html)
 }
 
-async function createForm(html){
+async function createForm(html) {
   let classRoom = []
   const $ = cheerio.load(html)
-  $('#Table6 > tbody > tr'),map((i, item) => {
-    if(i > 1){
-       
+  $('#Table6 > tbody > tr').map((i, item) => {
+    if (i > 1) {
+      Object
+        .keys(item)
+        .map(item => console.log(item))
     }
   })
 }
 
-async function ttfish(){
-await getClassRoom()
-await createForm()
+async function ttfish() {
+  await getClassRoom()
 }
 
 ttfish()
