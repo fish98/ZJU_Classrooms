@@ -1,6 +1,16 @@
 const fetch = require('node-fetch')
 const cheerio = require('cheerio')
 const FormData = require('form-data')
+const classRoom = require('./ClassRoom').data
+
+const requireClass = []
+
+// 解析教室信息并合并为数组
+
+const find = cheerio.load(classRoom)
+find('option').map((index, item) => {
+    requireClass.push(find(item).attr('value'))
+})
 
 const site = "http://jxzygl.zju.edu.cn/jxzwsyqk/jxcdkb.aspx?jsdl=1"
 let flag = 0
@@ -15,13 +25,15 @@ let conf = {
   btnSelect: '查询'
 }
 
-let course = new Array();
-for (var k = 0; k < 15; k++) { // 有16行 
+let course = new Array(); // 初始化array 希望以后能用fill重写
+for (var k = 0; k < 15; k++) { // 有16行
   course[k] = new Array();
   for (var j = 0; j < 14; j++) { // 14列
     course[k][j] = 0;
   }
 }
+
+// 一整段都是玄学的东西
 
 async function getXuanXue() {
   let form = new FormData()
@@ -72,17 +84,7 @@ async function getDetail() {
   return html
 }
 
-async function getClassRoom() {
-  await getXuanXue()
-  await changeXuanXue()
-  await getXuanXue()
-  await changeXuanXue()
-  const html = await getDetail()
-  await createForm(html)
-}
-
 async function createForm(html) {
-  let classRoom = []
   const $ = cheerio.load(html)
   $('#Table6 > tbody > tr').map((row, item) => {
     if (row > 1) {
@@ -93,30 +95,39 @@ async function createForm(html) {
         .map((col, item) => {
           if (col > 0) {
             if ($(item).text() != " " && $(item).text() !== "第一节" && $(item).text() !== "第六节" && $(item).text() !== "第11节") {
-              // console.log(col, $(item).text())
               let width = $(item).attr('colspan') || 1
               let height = $(item).attr('rowspan') || 1
               for (let a = 0; a < height; a++) {
                 for (let b = 0; b < width; b++) {
                   /* 添加是否满足条件添加入上课目录 */
-                 //  console.log($(item).text())
                   course[row - 2 + a][col - rowOffset + colOffset + b] = 1
-              }
+                }
               }
               colOffset += (width - 1)
             }
           }
         })
-      // let b = Object.keys(item) b.map(item => console.log($(item))) .map(item => {
-      //     // get inner children let fish = $(item) console.log((fish.children))
-      // .map(item => {      // deal with the children console.log(item) })  })
+
     }
   })
   console.log(course)
 }
 
-async function ttfish() {
-  await getClassRoom()
+// 最终获得并生成课程排列数组
+
+async function getCourse() {
+  await getXuanXue()
+  await changeXuanXue()
+  await getXuanXue()
+  await changeXuanXue()
+  const html = await getDetail()
+  await createForm(html)
 }
 
-ttfish()
+// 为了异步而异步
+
+async function ttfish() {
+  await getCourse()
+}
+
+// ttfish()
