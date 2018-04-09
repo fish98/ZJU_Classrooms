@@ -9,33 +9,42 @@ const requireClass = []
 
 const find = cheerio.load(classRoom)
 find('option').map((index, item) => {
-    requireClass.push(find(item).attr('value'))
+  requireClass.push(find(item).attr('value'))
 })
 
-const site = "http://jxzygl.zju.edu.cn/jxzwsyqk/jxcdkb.aspx?jsdl=1"
-let flag = 0
+// 开始循环
 
-let conf = {
-  ScriptManager1: 'ScriptManager1|btnSelect',
-  xn: '2017-2018',
-  xq: `2,春`,
-  ddlXq: '5',
-  js0: '-1',
-  js: '511B0306',
-  btnSelect: '查询'
-}
+async function ttfish() {
+  requireClass.map(async classroom => {
+    let conf = {
+      ScriptManager1: 'ScriptManager1|btnSelect',
+      xn: '2017-2018',
+      xq: `2,夏`,
+      ddlXq: '5',
+      js0: '-1',
+      js: classroom,
+      btnSelect: '查询'
+    }
 
-let course = new Array(); // 初始化array 希望以后能用fill重写
-for (var k = 0; k < 15; k++) { // 有16行
-  course[k] = new Array();
-  for (var j = 0; j < 14; j++) { // 14列
-    course[k][j] = 0;
-  }
+    const site = "http://jxzygl.zju.edu.cn/jxzwsyqk/jxcdkb.aspx?jsdl=1"
+    let flag = 0
+
+    let course = new Array(); // 初始化array 希望以后能用fill重写
+    for (var k = 0; k < 15; k++) { // 有16行
+      course[k] = new Array();
+      for (var j = 0; j < 14; j++) { // 14列
+        course[k][j] = 0;
+      }
+    }
+
+    let a = await createArray(conf, site, flag, course)
+    console.log(typeof(a))
+  })
 }
 
 // 一整段都是玄学的东西
 
-async function getXuanXue() {
+async function getXuanXue(conf, site) {
   let form = new FormData()
   Object
     .keys(conf)
@@ -57,20 +66,18 @@ async function getXuanXue() {
     })
 }
 
-async function changeXuanXue() {
-  if (!flag) {
-    delete conf.btnSelect
-    delete conf.ScriptManager1
-    conf['__EVENTTARGET'] = 'ddlXq'
-    flag = 1
-  } else {
-    delete conf['__EVENTTARGET']
-    conf.btnSelect = '查询'
-    flag = 0
-  }
+async function changeXuanXue_1(conf) {
+  delete conf.btnSelect
+  delete conf.ScriptManager1
+  conf['__EVENTTARGET'] = 'ddlXq'
 }
 
-async function getDetail() {
+async function changeXuanXue_2(conf) {
+  delete conf['__EVENTTARGET']
+  conf.btnSelect = '查询'
+}
+
+async function getDetail(conf, site) {
   delete conf.ScriptManager1
   let body = new FormData()
   Object
@@ -84,8 +91,10 @@ async function getDetail() {
   return html
 }
 
-async function createForm(html) {
+async function createForm(html, course) {
   const $ = cheerio.load(html)
+  let roomName = $('#lbCount').text()
+  roomName = roomName.substring(roomName.indexOf('港') + 1, roomName.indexOf('('))
   $('#Table6 > tbody > tr').map((row, item) => {
     if (row > 1) {
       let colOffset = 0 // 全局偏移量
@@ -107,27 +116,24 @@ async function createForm(html) {
             }
           }
         })
-
     }
   })
-  console.log(course)
 }
 
 // 最终获得并生成课程排列数组
 
-async function getCourse() {
-  await getXuanXue()
-  await changeXuanXue()
-  await getXuanXue()
-  await changeXuanXue()
-  const html = await getDetail()
-  await createForm(html)
+async function createArray(conf, site, flag, course) {
+  await getXuanXue(conf, site)
+  await changeXuanXue_1(conf, flag)
+  await getXuanXue(conf, site)
+  await changeXuanXue_2(conf, flag)
+  const html = await getDetail(conf, site)
+  await createForm(html, course)
+  return course.filter((item, index) => {
+    index % 2 === 0
+  })
 }
 
-// 为了异步而异步
+// 为了异步而异步 async function ttfish() {}
 
-async function ttfish() {
-  await getCourse()
-}
-
-// ttfish()
+ttfish()
