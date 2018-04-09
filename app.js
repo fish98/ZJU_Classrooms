@@ -12,8 +12,15 @@ let conf = {
   ddlXq: '5',
   js0: '-1',
   js: '511B0306',
-  ddlZc: '2',
   btnSelect: '查询'
+}
+
+let course = new Array();
+for (var k = 0; k < 15; k++) { // 有16行 
+  course[k] = new Array();
+  for (var j = 0; j < 14; j++) { // 14列
+    course[k][j] = 0;
+  }
 }
 
 async function getXuanXue() {
@@ -77,13 +84,35 @@ async function getClassRoom() {
 async function createForm(html) {
   let classRoom = []
   const $ = cheerio.load(html)
-  $('#Table6 > tbody > tr').map((i, item) => {
-    if (i > 1) {
-      Object
-        .keys(item)
-        .map(item => console.log(item))
+  $('#Table6 > tbody > tr').map((row, item) => {
+    if (row > 1) {
+      let colOffset = 0 // 全局偏移量
+      const rowOffset = (row === 2 || row === 7 || row === 12) + 1
+      $(item)
+        .find('td')
+        .map((col, item) => {
+          if (col > 0) {
+            if ($(item).text() != " " && $(item).text() !== "第一节" && $(item).text() !== "第六节" && $(item).text() !== "第11节") {
+              // console.log(col, $(item).text())
+              let width = $(item).attr('colspan') || 1
+              let height = $(item).attr('rowspan') || 1
+              for (let a = 0; a < height; a++) {
+                for (let b = 0; b < width; b++) {
+                  /* 添加是否满足条件添加入上课目录 */
+                 //  console.log($(item).text())
+                  course[row - 2 + a][col - rowOffset + colOffset + b] = 1
+              }
+              }
+              colOffset += (width - 1)
+            }
+          }
+        })
+      // let b = Object.keys(item) b.map(item => console.log($(item))) .map(item => {
+      //     // get inner children let fish = $(item) console.log((fish.children))
+      // .map(item => {      // deal with the children console.log(item) })  })
     }
   })
+  console.log(course)
 }
 
 async function ttfish() {
