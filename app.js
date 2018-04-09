@@ -2,6 +2,7 @@ const fetch = require('node-fetch')
 const cheerio = require('cheerio')
 const FormData = require('form-data')
 const classRoom = require('./ClassRoom').data
+const jimp = require('jimp')
 
 const requireClass = []
 
@@ -37,8 +38,10 @@ async function ttfish() {
       }
     }
 
-    let a = await createArray(conf, site, flag, course)
-    console.log(typeof(a))
+    let courseArrayInfo = await createArray(conf, site, flag, course)
+    const courseArray = courseArrayInfo.courseArray
+    const classRoomName = courseArrayInfo.classRoomName
+    await createImg(courseArray, classRoomName)
   })
 }
 
@@ -118,6 +121,7 @@ async function createForm(html, course) {
         })
     }
   })
+  return roomName
 }
 
 // 最终获得并生成课程排列数组
@@ -128,12 +132,29 @@ async function createArray(conf, site, flag, course) {
   await getXuanXue(conf, site)
   await changeXuanXue_2(conf, flag)
   const html = await getDetail(conf, site)
-  await createForm(html, course)
-  return course.filter((item, index) => {
-    index % 2 === 0
+  const classRoomName = await createForm(html, course)
+  let courseArray = course.map(item => {
+    return item.filter((item, index) => index % 2 === 1)
   })
+  let courseArrayInfo = {
+    courseArray: courseArray,
+    classRoomName: classRoomName
+  }
+  return courseArrayInfo
 }
 
-// 为了异步而异步 async function ttfish() {}
+async function createImg(courseArray, classRoomName) {
+  const bg = await jimp.read('./img/summer.png')
+  let classImage = await jimp.read('./img/class.png')
+  for (var i = 0; i < 13; i++) {
+    for (var j = 0; j < 7; j++) {
+      if (courseArray[i][j]) {
+        bg.composite(classImage, 177 * j + 1240, 550 + 140 * i + 130 * Math.floor((i) / 5))
+      }
+    }
+  }
+  bg.write(`./classRooms/${classRoomName}.png`)
+  console.log(`finish write ${classRoomName}`)
+}
 
 ttfish()
