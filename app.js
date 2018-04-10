@@ -2,7 +2,7 @@ const fetch = require('node-fetch')
 const cheerio = require('cheerio')
 const FormData = require('form-data')
 const classRoom = require('./ClassRoom').data
-const jimp = require('jimp')
+const Jimp = require('jimp')
 
 const requireClass = []
 
@@ -13,7 +13,7 @@ find('option').map((index, item) => {
   requireClass.push(find(item).attr('value'))
 })
 
-// 开始循环
+/* 开始函数 */
 
 async function ttfish() {
   requireClass.map(async classroom => {
@@ -28,17 +28,16 @@ async function ttfish() {
     }
 
     const site = "http://jxzygl.zju.edu.cn/jxzwsyqk/jxcdkb.aspx?jsdl=1"
-    let flag = 0
 
     let course = new Array(); // 初始化array 希望以后能用fill重写
-    for (var k = 0; k < 15; k++) { // 有16行
+    for (var k = 0; k < 15; k++) { // 有14行
       course[k] = new Array();
-      for (var j = 0; j < 14; j++) { // 14列
+      for (var j = 0; j < 14; j++) { // 13列
         course[k][j] = 0;
       }
     }
 
-    let courseArrayInfo = await createArray(conf, site, flag, course)
+    let courseArrayInfo = await createArray(conf, site, course)
     const courseArray = courseArrayInfo.courseArray
     const classRoomName = courseArrayInfo.classRoomName
     await createImg(courseArray, classRoomName)
@@ -69,6 +68,8 @@ async function getXuanXue(conf, site) {
     })
 }
 
+/* change config data */
+
 async function changeXuanXue_1(conf) {
   delete conf.btnSelect
   delete conf.ScriptManager1
@@ -79,6 +80,8 @@ async function changeXuanXue_2(conf) {
   delete conf['__EVENTTARGET']
   conf.btnSelect = '查询'
 }
+
+/* 最终的有用请求函数 */
 
 async function getDetail(conf, site) {
   delete conf.ScriptManager1
@@ -94,10 +97,16 @@ async function getDetail(conf, site) {
   return html
 }
 
+/* 生成课程数组 并返回课程名 */
+
 async function createForm(html, course) {
   const $ = cheerio.load(html)
   let roomName = $('#lbCount').text()
-  roomName = roomName.substring(roomName.indexOf('港') + 1, roomName.indexOf('('))
+  roomName = roomName.substr(roomName.indexOf('港') + 1, 7)
+  // 坑
+  if (roomName.slice(-1) === '(') {
+    roomName = roomName.substring(0, roomName.length - 1)
+  }
   $('#Table6 > tbody > tr').map((row, item) => {
     if (row > 1) {
       let colOffset = 0 // 全局偏移量
@@ -126,26 +135,41 @@ async function createForm(html, course) {
 
 // 最终获得并生成课程排列数组
 
-async function createArray(conf, site, flag, course) {
+async function createArray(conf, site, course) {
+
   await getXuanXue(conf, site)
-  await changeXuanXue_1(conf, flag)
+
+  await changeXuanXue_1(conf)
+
   await getXuanXue(conf, site)
-  await changeXuanXue_2(conf, flag)
-  const html = await getDetail(conf, site)
+
+  await changeXuanXue_2(conf)
+
+  const html = await getDetail(conf, site) // get the real data needed
+
   const classRoomName = await createForm(html, course)
+
   let courseArray = course.map(item => {
-    return item.filter((item, index) => index % 2 === 1)
+    return item.filter((item, index) => index % 2 === 0) // such a shame && need to fix
   })
+
   let courseArrayInfo = {
     courseArray: courseArray,
     classRoomName: classRoomName
   }
+  console.log(`Success form ${classRoomName} Array`)
   return courseArrayInfo
 }
 
+// form the image
+
 async function createImg(courseArray, classRoomName) {
-  const bg = await jimp.read('./img/summer.png')
-  let classImage = await jimp.read('./img/class.png')
+
+  const bg = await Jimp.read('./img/summer.png')
+  const classImage = await Jimp.read('./img/class.png')
+  const Dong = await Jimp.read('./font/dong.png')
+  const Xi = await Jimp.read('./font/xi.png')
+
   for (var i = 0; i < 13; i++) {
     for (var j = 0; j < 7; j++) {
       if (courseArray[i][j]) {
@@ -153,8 +177,32 @@ async function createImg(courseArray, classRoomName) {
       }
     }
   }
-  bg.write(`./classRooms/${classRoomName}.png`)
-  console.log(`finish write ${classRoomName}`)
+  // print Dong or Xi
+
+  if (classRoomName.slice(0, 1) === '西') {
+    Xi.resize(150, 150)
+    bg.composite(Xi, 150, 150)
+  } else {
+    Dong.resize(150, 150)
+    bg.composite(Dong, 150, 150)
+  }
+
+  // print classRoom Name
+
+  await Jimp
+    .loadFont(Jimp.FONT_SANS_128_WHITE)
+    .then(function (font) {
+      bg.print(font, 300, 165, classRoomName)
+    })
+
+  // in all to write in and pipe out
+
+  function writeImg() {
+    bg.write(`./ClassRoom/${classRoomName}.png`)
+    console.log(`Finish write ${classRoomName}`)
+  }
+
+  await writeImg()
 }
 
 ttfish()

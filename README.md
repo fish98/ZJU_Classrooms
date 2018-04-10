@@ -1,4 +1,6 @@
-# Spider
+# Spider for ClassRoom Courses
+
+## Using Cheerio && Jimp
 
 Spider for School Classrooms
 
