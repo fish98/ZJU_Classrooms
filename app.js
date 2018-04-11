@@ -13,7 +13,7 @@ find('option').map((index, item) => {
   requireClass.push(find(item).attr('value'))
 })
 
-/* 开始函数 */
+/* 主函数 */
 
 async function ttfish() {
   requireClass.map(async classroom => {
@@ -40,6 +40,7 @@ async function ttfish() {
     let courseArrayInfo = await createArray(conf, site, course)
     const courseArray = courseArrayInfo.courseArray
     const classRoomName = courseArrayInfo.classRoomName
+
     await createImg(courseArray, classRoomName)
   })
 }
@@ -97,6 +98,33 @@ async function getDetail(conf, site) {
   return html
 }
 
+/* 检测是否需要打印有课标志函数 */
+
+function enoughCourse(courseDetail) {
+  let point = 0
+  let count = 0
+   if (courseDetail.indexOf("研究生") !== -1 || courseDetail.indexOf("博士") !== -1) {
+     return 1
+   } else {
+    point = courseDetail.indexOf("第")
+     while (point !== -1) {
+      if ((courseDetail.substring(point + 2, point + 3)) === '-') {
+        count += (courseDetail.substr(point + 3, 1) - courseDetail.substr(point + 1, 1) + 1)
+       } 
+       else if (courseDetail.substr(point + 1, 1) >= 1 && courseDetail.substr(point + 1, 1) < 10) {
+         count = count + 1
+       }
+      point = courseDetail.indexOf("第", point + 1)
+    }
+  }
+  if(count < 4) {
+    return 0
+  }
+  else{
+    return 1
+  }
+}
+
 /* 生成课程数组 并返回课程名 */
 
 async function createForm(html, course) {
@@ -121,7 +149,10 @@ async function createForm(html, course) {
               for (let a = 0; a < height; a++) {
                 for (let b = 0; b < width; b++) {
                   /* 添加是否满足条件添加入上课目录 */
-                  course[row - 2 + a][col - rowOffset + colOffset + b] = 1
+                  let textClass = $(item).text()
+                  if (enoughCourse(textClass)) {
+                    course[row - 2 + a][col - rowOffset + colOffset + b] = 1
+                  }
                 }
               }
               colOffset += (width - 1)
@@ -149,8 +180,21 @@ async function createArray(conf, site, course) {
 
   const classRoomName = await createForm(html, course)
 
-  let courseArray = course.map(item => {
-    return item.filter((item, index) => index % 2 === 0) // such a shame && need to fix
+  /* 单周或者双周任意有课则打印 */
+
+  let courseArray = course.map(items => {
+    let flag = 0
+    return [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ].map(i => {
+      return items.slice(2 * i, 2 * i + 2)
+    }).map(item => item[0] || item[1])
   })
 
   let courseArrayInfo = {
@@ -166,9 +210,11 @@ async function createArray(conf, site, course) {
 async function createImg(courseArray, classRoomName) {
 
   const bg = await Jimp.read('./img/summer.png')
-  const classImage = await Jimp.read('./img/class.png')
+  let classImage = await Jimp.read('./img/class.png')
   const Dong = await Jimp.read('./font/dong.png')
   const Xi = await Jimp.read('./font/xi.png')
+  //let classImage = classImg.resize(150, 120)
+   
 
   for (var i = 0; i < 13; i++) {
     for (var j = 0; j < 7; j++) {
@@ -198,7 +244,7 @@ async function createImg(courseArray, classRoomName) {
   // in all to write in and pipe out
 
   function writeImg() {
-    bg.write(`./ClassRoom/${classRoomName}.png`)
+    bg.write(`./FinalClassRoom/${classRoomName}.png`)
     console.log(`Finish write ${classRoomName}`)
   }
 

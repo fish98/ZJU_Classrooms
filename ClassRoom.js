@@ -1,11 +1,11 @@
-const classRoom = // `<option value="53010406">紫金港西1-406(多)</option>`
+const classRoom = // `<option value="53010406">紫金港西1-406(多)</option>` 将这个教室作为测试教室 因为课多
 `
-    <option value="511A0110">紫金港东1A-121(普)*</option>
-    <option value="511A0112">紫金港东1A-123(普)*</option>
-    <option value="511A0107">紫金港东1A-130(多研)</option>
-    <option value="511A0109">紫金港东1A-132多)</option>
-    <option value="511A0401">紫金港东1A-401(多)</option>
-    <option value="511A0402">紫金港东1A-402(多)</option>
+   <option value="511A0110">紫金港东1A-121(普)*</option>
+   <option value="511A0112">紫金港东1A-123(普)*</option>
+   <option value="511A0107">紫金港东1A-130(多研)</option>
+   <option value="511A0109">紫金港东1A-132多)</option>
+   <option value="511A0401">紫金港东1A-401(多)</option>
+   <option value="511A0402">紫金港东1A-402(多)</option>
     <option value="511A0403">紫金港东1A-403(多研)</option>
     <option value="511A0404">紫金港东1A-404(多)</option>
     <option value="511A0405">紫金港东1A-405(多)</option>
@@ -82,5 +82,5 @@ const classRoom = // `<option value="53010406">紫金港西1-406(多)</option>`
     <option value="53020520">紫金港西2-520(多研)</option>
     `
 module.exports = {
-    data : classRoom
+  data: classRoom
 }
