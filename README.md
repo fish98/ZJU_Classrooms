@@ -4,9 +4,9 @@
 
 Spider for School Classrooms Courses
 
-Mr.Boya used the world's best coding language to form the classroom course images last year while the parallel running caused the stuck up and overflow on the Dev Qsc
+Mr.Boya used the world's best coding language to form the classroom course images last year while the parallel running caused the stuck up and overflow on the Dev Qsc and the whole process lasted for 10 hours
 
-So I have to rewite 
+So I have to rewite it in node.js
 
 Trying best to adjust the web page from school classroom register center 
 Really awful experience for digging data and fixing forms (Especially in parsing string )
@@ -32,5 +32,7 @@ Run `node app.js` to start forming classroom course images
 
 The process will last 5 minutes or so
 
-Have fun ~
+Well
+
+Please Have Fun ~
 
