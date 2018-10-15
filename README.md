@@ -1,4 +1,4 @@
-# Node Spider for Free ClassRoom in ZJU 
+# Node Spider For Getting ClassRoom Information 
 
 * Updated on 8102/10/15
 
@@ -8,15 +8,13 @@
 
 等一下尝试打包成electron版本试一试 hiahiahia
 
-## TTFish爬取2018紫金港部分教室 生成夏学期课表
+## TTFish 获取上课信息 生成夏学期课表
 
 有许多地方可以改进 尤其是对于纯函数的实现 不是非常的喵 
 
 能进行更改的config分别在config.js和app.js第34行的conf
 
 非常欢迎重写 开一些高级的优化 做一些高效的事情 但禁止使用PHP重写!! 
-
-远古代码php版本链接：https://git.zjuqsc.com/ZhangXiangyu/classroomTimetable
 
 ## 关于运行
 

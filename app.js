@@ -3,10 +3,10 @@
 // @ 8102/10/15 今年想改代码 忽然发现去年就已经兼容多季节生成了 真开心hhh
 
 // @ TTFish爬取2018紫金港部分教室 生成四季课表?HiaHiaHia
+
 // @ 有许多地方可以改进 尤其是对于纯函数的实现 非常的不好 
 // @ 能进行更改的config分别在config.js和第34行的conf
 // @ 非常欢迎重写 但禁止使用PHP!! 
-// @ 远古代码php版本链接：https://git.zjuqsc.com/ZhangXiangyu/classroomTimetable
 
 const fetch = require('node-fetch')
 const cheerio = require('cheerio')
