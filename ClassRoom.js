@@ -81,4 +81,4 @@ const classRoom = // `<option value="53010406">紫金港西1-406(多)</option>` 
     <option value="53020519">紫金港西2-519(多研)</option>
     <option value="53020520">紫金港西2-520(多研)</option>
     `
-export const data = classRoom;
+module.exports = classRoom;

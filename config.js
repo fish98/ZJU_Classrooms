@@ -1,5 +1,5 @@
-const Dir = `./FinalClassRoom` // set target dir to store formed images
-const bgs = 'summer'
-
-export const target = Dir;
-export const season = bgs;
+module.exports = {
+    target: `./ClassRoom`,
+    year: '2018-2019',
+    season: 'winter',
+}

@@ -1,17 +1,34 @@
-// @ TTFish爬取2018紫金港部分教室夏学期课表
+'use strict'
+
+// @ 8102/10/15 今年想改代码 忽然发现去年就已经兼容多季节生成了 真开心hhh
+
+// @ TTFish爬取2018紫金港部分教室 生成四季课表?HiaHiaHia
 // @ 有许多地方可以改进 尤其是对于纯函数的实现 非常的不好 
 // @ 能进行更改的config分别在config.js和第34行的conf
-// @ 非常欢迎重写 但请别使用PHP 
+// @ 非常欢迎重写 但禁止使用PHP!! 
 // @ 远古代码php版本链接：https://git.zjuqsc.com/ZhangXiangyu/classroomTimetable
 
 const fetch = require('node-fetch')
 const cheerio = require('cheerio')
 const FormData = require('form-data')
-const classRoom = require('./ClassRoom').data
+const classRoom = require('./ClassRoom')
 const Jimp = require('jimp')
 
 const ClassRoomDir = require('./config').target
 const bgSeason = require('./config').season
+const year = require('./config').year
+
+// 季节不同导致下面的conf参数xq不一样 检测函数
+
+let xqConfig 
+
+switch(bgSeason){
+    case 'spring': xqConfig = '2,春'; break;
+    case 'summer': xqConfig = '2,夏'; break;
+    case 'autumn': xqConfig = '1,秋'; break;
+    case 'winter': xqConfig = '1,冬'; break;
+    default: throw new Error('Do Not Dear Modefy My Code and Configure Config File Correctly!!!'); break;
+  }
 
 // 设置课表图片导出文件夹
 
@@ -32,19 +49,13 @@ async function ttfish() {
     /* Config 初始化设置 */
 
     let conf = {
-      ScriptManager1: 'ScriptManager1|btnSelect',
-      /* 不可更改 */
-      xn: '2017-2018',
-      /* 当前学年 */
-      xq: `2,夏`,
-      /* 当前学期 */
-      ddlXq: '5',
-      /* '5' 代表紫金港 */
-      js0: '-1',
-      /* 不可更改 */
-      js: classroom,
-      /* 读入的教室数组 */
-      btnSelect: '查询'/* 不可更改 */
+      ScriptManager1: 'ScriptManager1|btnSelect',   /* 不可更改 */
+      xn: year,                                     /* 当前学年 */
+      xq: xqConfig,                                   /* 当前学期 */
+      ddlXq: '5',                                   /* '5' 代表紫金港 */
+      js0: '-1',                                    /* 不可更改 鬼知道这是什么 */
+      js: classroom,                                /* 读入的教室数组 */
+      btnSelect: '查询'                              /* 不可更改 */
     }
 
     const site = "http://jxzygl.zju.edu.cn/jxzwsyqk/jxcdkb.aspx?jsdl=1" //教务网 非学校内网DNS不能访问
@@ -242,11 +253,11 @@ async function createArray(conf, site, course) {
     courseArray: courseArray,
     classRoomName: classRoomName
   }
-  console.log(`Success form ${classRoomName} Array`)
+  console.log(`Success Generate ${classRoomName} Array`)
   return courseArrayInfo
 }
 
-// form the image
+// Generate the image
 
 async function createImg(courseArray, classRoomName) {
 
@@ -260,7 +271,7 @@ async function createImg(courseArray, classRoomName) {
     for (var j = 0; j < 7; j++) {
       if (courseArray[i][j]) {
 
-        // 博亚学长祖传的参数 微调
+        // 博亚学长の祖传参数+跳跳鱼的微调
 
         bg.composite(classImage, 177 * j + 1240, 550 + 140 * i + 130 * Math.floor((i) / 5))
       }
